@@ -1,98 +1,128 @@
 import csv
 
 
+class Student:
+    def __init__(self, name, roll_no, english, tamil, maths):
+        self.name = name
+        self.roll_no = roll_no
+        self.english = english
+        self.tamil = tamil
+        self.maths = maths
 
+        self.total = self.calculate_total()
+        self.max_marks = self.calculate_max()
+        self.min_marks = self.calculate_min()
+        self.status = self.calculate_status()
+        self.rank = self.calculate_rank()
 
-stu = []
+    def calculate_total(self):
+        return self.english + self.tamil + self.maths
+
+    def calculate_max(self):
+        return max(self.english, self.tamil, self.maths)
+
+    def calculate_min(self):
+        return min(self.english, self.tamil, self.maths)
+
+    def calculate_status(self):
+        if self.english >= 35 and self.tamil >= 35 and self.maths >= 35:
+            return "Pass"
+        return "Fail"
+
+    def calculate_rank(self):
+        if self.total >= 270:
+            return "Rank 1"
+        elif self.total >= 240:
+            return "Rank 2"
+        elif self.total >= 180:
+            return "Rank 3"
+        else:
+            return "No Rank"
+
+    def display(self):
+        print(
+            f"Name: {self.name} | "
+            f"Roll No: {self.roll_no} | "
+            f"Total: {self.total} | "
+            f"Max: {self.max_marks} | "
+            f"Min: {self.min_marks} | "
+            f"Status: {self.status} | "
+            f"Rank: {self.rank}"
+        )
+
+    def to_csv_row(self):
+        return [
+            self.name,
+            self.roll_no,
+            self.english,
+            self.tamil,
+            self.maths,
+            self.total,
+            self.max_marks,
+            self.min_marks,
+            self.status,
+            self.rank
+        ]
+
 
 def get_valid_marks(subject):
-     while True:
+    while True:
         try:
             marks = int(input(f"Enter {subject} marks: "))
-            if 0<=marks<=100:
-                return marks 
+            if 0 <= marks <= 100:
+                return marks
             else:
-                print ("Marks should be in the range of 0 to 100")
+                print("Marks should be between 0 and 100")
         except ValueError:
-             print("Value Error !! Enter only numbers")
+            print("Enter numbers only")
 
-def get_only_numbers():
-     while True:
+
+def get_valid_number():
+    while True:
         try:
-            n = int(input("Enter number of inputs: "))
+            n = int(input("Enter number of students: "))
             if n > 0:
                 return n
             else:
                 print("Enter valid number")
         except ValueError:
-            print("Input should be only in numbers")
-            
-               
+            print("Numbers only")
 
-n = get_only_numbers()
-     
-for i in range(n):
-    li = []
-    name = input("Enter name: ")
-    roll_no = int(input("Enter roll_no: "))
-    
-    English = get_valid_marks("English")
-    li.append(English)
-   
-    
-    Tamil = get_valid_marks("Tamil")
-    li.append(Tamil)
-    Maths = get_valid_marks("Maths")
-    li.append(Maths)
-    Total = English + Tamil + Maths
-    
-    Max_Marks = max(li)
-    Min_Marks = min(li)
 
-    if English >= 35 and Tamil >= 35 and Maths >= 35:
-        status = "Pass"
-    else:
+students_list = []
 
-        status = "Fail"
-
-    students = {
-        "name":name,
-        "roll_no":roll_no,
-        
-        "status":status,
-        "max_marks":Max_Marks,
-        "min_marks":Min_Marks,
-        "status":status,
-        "total":Total
-    }
-    stu.append(students)
-for i in stu:
-        
-        print(f"Name:{i['name']} Max_marks:{i['max_marks']} Min_marks:{i['min_marks']} status:{i['status']} Total:{i['total']}")
-file = open("students.csv","w",newline = "")
+file = open("students.csv", "w", newline="")
 writer = csv.writer(file)
+
 writer.writerow([
     "Name",
     "Roll No",
-    
     "English",
     "Tamil",
     "Maths",
     "Total",
     "Max Marks",
     "Min Marks",
-    "Status"
+    "Status",
+    "Rank"
 ])
-writer.writerow([
-    name,
-    roll_no,
-    
-    English,
-    Tamil,
-    Maths,
-    Total,
-    Max_Marks,
-    Min_Marks,
-    status
-])
+
+n = get_valid_number()
+
+for i in range(n):
+    name = input("Enter name: ")
+    roll_no = int(input("Enter roll no: "))
+
+    english = get_valid_marks("English")
+    tamil = get_valid_marks("Tamil")
+    maths = get_valid_marks("Maths")
+
+    student = Student(name, roll_no, english, tamil, maths)
+
+    students_list.append(student)
+    writer.writerow(student.to_csv_row())
+
 file.close()
+
+for student in students_list:
+    student.display()
