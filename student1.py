@@ -122,6 +122,12 @@ for i in range(n):
         min_marks,
         status
     ))
+    cur.execute("""
+    ALTER TABLE students
+    ADD COLUMN is_deleted INT DEFAULT 0
+""")
+
+
 
 conn.commit()
 
@@ -214,12 +220,12 @@ if delete_student.lower() == "yes":
         except ValueError:
             print("Enter only numbers")
     cur.execute("""
-           DELETE FROM STUDENTS WHERE roll_no = %s
+           UPDATE STUDENTS set is_deleted = 1 WHERE roll_no = %s
                     """,(delete_roll,))
     conn.commit()
     print("\nStudent record deleted succesfully")
-    print("\nRemaining student Records:\n")
-    cur.execute("select * From students")
+    print("\nRemaining student Record:\n")
+    cur.execute("select * From students where is_deleted = 0")
     rows = cur.fetchall()
     for row in rows:
         print(row)
