@@ -122,11 +122,8 @@ for i in range(n):
         min_marks,
         status
     ))
-    cur.execute("""
-    ALTER TABLE students
-    ADD COLUMN is_deleted INT DEFAULT 0
-""")
-
+    
+    
 
 
 conn.commit()
@@ -137,12 +134,25 @@ print("\nStudent data inserted successfully")
 # Display All Records
 print("\nStudent Records:\n")
 
-cur.execute("SELECT * FROM students")
+page_size =3
+while True:
+    page = int(input("\nEnter page number: "))
 
-rows = cur.fetchall()
+    offset = (page-1)* page_size
+    cur.execute(""" 
+          Select * from students where is_deleted = 0 order by id Limit %s OFFSET %s""",(page_size,offset))
+    rows = cur.fetchall()
+    if rows:
+        print(f"\nShowing page {page}\n")
+        for row in rows:
+            print(row)
+    else:
+        print("\nNo more records found")
 
-for row in rows:
-    print(row)
+    next_page = input("\nDo you want another page? (yes/no): ")
+
+    if next_page.lower() != "yes":
+        break
 
 
 # Update Feature
